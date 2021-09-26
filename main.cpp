@@ -1,3 +1,10 @@
+//
+//  main.cpp
+//  dijkstra-fib
+//
+//  Created by mndx on 26/09/2021.
+//
+
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
@@ -7,6 +14,11 @@
 #include <vector>
 
 const int SETVAR = 314159;
+
+typedef struct FibHeapProperties {
+    bool deg_is_num_child;
+    int num_nodes;
+} fib_props;
 
 typedef struct Node {
     Node* left;
@@ -338,7 +350,7 @@ void print_circle(node* z) {
     }
 }
 
-bool numbers_children_match(node* z) {
+bool numbers_children_match(node* z, int& num_nodes) {
     bool nums_match = true;
     int num_of_nodes = 0;
 
@@ -347,7 +359,7 @@ bool numbers_children_match(node* z) {
         while(xt->right != z->child) {
             num_of_nodes++;
             if(xt->child != NULL) {
-                nums_match = numbers_children_match(xt);
+                nums_match = numbers_children_match(xt, num_nodes);
                 if(!nums_match) { return false; }
             }
             xt = xt->right;
@@ -355,10 +367,12 @@ bool numbers_children_match(node* z) {
         if(xt->right == z->child) {
             num_of_nodes++;
             if(xt->child != NULL) {
-                nums_match = numbers_children_match(xt);
+                nums_match = numbers_children_match(xt, num_nodes);
                 if(!nums_match) { return false; }
             }
         }
+
+        num_nodes = num_nodes + num_of_nodes;
 
         if(num_of_nodes == z->degree) { nums_match = true; }
         else { nums_match = false; }
@@ -367,23 +381,35 @@ bool numbers_children_match(node* z) {
     return nums_match;
 }
 
-bool numbers_match(node* z) {
+fib_props numbers_match(node* z) {
+
     bool nums_match = true;
+    int num_nodes = 0;
+    fib_props fib_heap_props = { nums_match, num_nodes };
 
     node* xt = z;
     if(xt != NULL) {
         while(xt->right != z) {
-            nums_match = numbers_children_match(xt);
-            if(!nums_match) { return false; }
+            num_nodes++;
+            nums_match = numbers_children_match(xt, num_nodes);
+            fib_heap_props.deg_is_num_child = nums_match;
+            fib_heap_props.num_nodes = num_nodes;
+            if(!nums_match) { return fib_heap_props; }
             xt = xt->right;
         }
         if(xt->right == z) {
-            nums_match = numbers_children_match(xt);
-            if(!nums_match) { return false; }
+            num_nodes++;
+            nums_match = numbers_children_match(xt, num_nodes);
+            fib_heap_props.deg_is_num_child = nums_match;
+            fib_heap_props.num_nodes = num_nodes;
+            if(!nums_match) { return fib_heap_props; }
         }
     }
 
-    return nums_match;
+    fib_heap_props.deg_is_num_child = nums_match;
+    fib_heap_props.num_nodes = num_nodes;
+
+    return fib_heap_props;
 }
 
 bool is_fib_heap_children(node* z) {
@@ -551,21 +577,6 @@ void relax(node* u, node* v, int** w, FibHeap* H) {
     }
 }
 
-void dijkstra(FibHeap* H, int** w, node** v_ref) {
-
-    //Perform Dijkstra's algorithm
-    while(H->n > 0) {
-        node* u = fib_heap_extract_min(H);
-
-        int num_adj_nodes = u->adj_nodes.size();
-        for(int i = 0; i < num_adj_nodes; ++i) {
-            int index_ref = u->adj_nodes[i];
-            node* v = v_ref[index_ref];
-            relax(u, v, w, H);
-        }
-    }
-}
-
 void set_index_map(int size_graph, int* index_map, int s) {
 
     int index_track = 0;
@@ -583,7 +594,7 @@ void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat,
 
     int** elem_is_set = int2D(size_graph);
 
-    int num_edges = edges.size();
+    int num_edges = (int) edges.size();
     for(int i = 0; i < num_edges; ++i) {
         int start = index_map[edges[i][0] - 1];
         int end = index_map[edges[i][1] - 1];
@@ -596,6 +607,44 @@ void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat,
             weight_mat[start][end] = weight_mat[end][start] = weight;
         }
         adj_mat[start][end] = adj_mat[end][start] = SETVAR;
+    }
+}
+
+bool check_fib_heap(FibHeap* H) {
+    /*This is the general test for the fibonacci heap.
+      The function returns true if the heap satisfies
+      the fibonacci heap properties
+     */
+
+    //Compute heap properties
+    fib_props fh_props = numbers_match(H->min);
+    bool heap_is_fibheap = is_fib_heap(H->min);
+
+    //Check if number of children equal node degrees
+    bool deg_is_num_childs = fh_props.deg_is_num_child;
+
+    //Check if number of nodes counted in heap equals H.n
+    int num_nodes = fh_props.num_nodes;
+    bool num_nodes_match = (num_nodes == H->n);
+
+    //Check to see if heap is properly structured
+    bool heap_is_ok = num_nodes_match && deg_is_num_childs && heap_is_fibheap;
+
+    return heap_is_ok;
+}
+
+void dijkstra(FibHeap* H, int** w, node** v_ref) {
+
+    //Perform Dijkstra's algorithm
+    while(H->n > 0) {
+        node* u = fib_heap_extract_min(H);
+
+        int num_adj_nodes = (int) u->adj_nodes.size();
+        for(int i = 0; i < num_adj_nodes; ++i) {
+            int index_ref = u->adj_nodes[i];
+            node* v = v_ref[index_ref];
+            relax(u, v, w, H);
+        }
     }
 }
 
@@ -624,7 +673,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     }
 
     //Add references to adjacent nodes
-    int num_edges = edges.size();
+    int num_edges = (int) edges.size();
     for(int i = 0; i < num_edges; ++i) {
         int start_index = edges[i][0] - 1;
         int end_index = edges[i][1] - 1;
@@ -686,7 +735,7 @@ int main(int argc, char* argv[]) {
     std::vector<int> results = shortest_reach(n, edges, s);
 
     //Print results
-    int size_results = results.size();
+    int size_results = (int) results.size();
     for(int i = 0; i < size_results; ++i) {
         std::cout << results[i] << " ";
     }
