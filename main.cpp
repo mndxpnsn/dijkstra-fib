@@ -423,11 +423,11 @@ void nullify_children_parent_node(node* z) {
     node* xt = z->child;
     if(xt != NULL) {
         while(xt->right != z->child) {
-        	xt->p = NULL;
+            xt->p = NULL;
             xt = xt->right;
         }
         if(xt->right == z->child) {
-        	xt->p = NULL;
+            xt->p = NULL;
         }
     }
 }
@@ -460,8 +460,8 @@ node* fib_heap_extract_min(FibHeap* H) {
         //Add each child of z to root list
         node* y = z->child;
         if(y != NULL) {
-        	//Set children's parent node to NULL
-        	nullify_children_parent_node(z);
+            //Set children's parent node to NULL
+            nullify_children_parent_node(z);
 
             y->left->right = z->right;
             z->right->left = y->left;
