@@ -151,34 +151,11 @@ void consolidate(FibHeap* H) {
     }
 
     node* x = H->min;
-    bool there_is_dup = true;
     if(x != NULL) {
         if(x->right != H->min) {
 
-            //Check for duplicate degree
-            there_is_dup = false;
-            while(x->right != H->min) {
-                int d = x->degree;
-                if(A[d] != NULL) {
-                    there_is_dup = true;
-                }
-                else {
-                    A[d] = x;
-                }
-                x = x->right;
-            }
-
-            if(x->right == H->min) {
-                int d = x->degree;
-                if(A[d] != NULL) {
-                    there_is_dup = true;
-                }
-                else {
-                    A[d] = x;
-                }
-            }
-
             //Ensure all root nodes have unique degrees
+            bool there_is_dup = true;
             while(there_is_dup) {
                 for(int i = 0; i < D + 2; ++i) {
                     A[i] = NULL;
@@ -264,6 +241,7 @@ void consolidate(FibHeap* H) {
         }
     }
 
+    //Reconstruct root list
     H->min = NULL;
     for(int i = 0; i < D + 2; ++i) {
         if(A[i] != NULL) {
@@ -441,6 +419,19 @@ bool is_fib_heap_children(node* z) {
     return is_fibheap;
 }
 
+void nullify_children_parent_node(node* z) {
+    node* xt = z->child;
+    if(xt != NULL) {
+        while(xt->right != z->child) {
+        	xt->p = NULL;
+            xt = xt->right;
+        }
+        if(xt->right == z->child) {
+        	xt->p = NULL;
+        }
+    }
+}
+
 bool is_fib_heap(node* z) {
     bool is_fibheap = true;
 
@@ -469,6 +460,9 @@ node* fib_heap_extract_min(FibHeap* H) {
         //Add each child of z to root list
         node* y = z->child;
         if(y != NULL) {
+        	//Set children's parent node to NULL
+        	nullify_children_parent_node(z);
+
             y->left->right = z->right;
             z->right->left = y->left;
             y->left = z;
@@ -476,17 +470,6 @@ node* fib_heap_extract_min(FibHeap* H) {
             z->degree = 0;
 
             z->child = NULL;
-        }
-
-        //Set all root parents to zero.
-        node* x_track = H->min;
-        while(x_track->right != H->min) {
-            x_track->p = NULL;
-            x_track = x_track->right;
-        }
-
-        if(x_track->right == H->min) {
-            x_track->p = NULL;
         }
 
         //Remove z from root list
