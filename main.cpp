@@ -157,10 +157,6 @@ void consolidate(FibHeap* H) {
             //Ensure all root nodes have unique degrees
             bool there_is_dup = true;
             while(there_is_dup) {
-                for(int i = 0; i < D + 2; ++i) {
-                    A[i] = NULL;
-                }
-
                 there_is_dup = false;
                 x = H->min;
                 while(x->right != H->min) {
