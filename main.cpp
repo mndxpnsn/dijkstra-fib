@@ -46,8 +46,10 @@ public:
 bool** bool2D(const int size) {
     bool** p = new bool*[size];
 
-    for(int i = 0; i < size; ++i)
+    for(int i = 0; i < size; ++i) {
+    	tot_num_ops++;
         p[i] = new bool[size];
+    }
 
     return p;
 }
@@ -55,8 +57,10 @@ bool** bool2D(const int size) {
 int** int2D(const int size) {
     int** p = new int*[size];
 
-    for(int i = 0; i < size; ++i)
+    for(int i = 0; i < size; ++i) {
+    	tot_num_ops++;
         p[i] = new int[size];
+    }
 
     return p;
 }
@@ -701,8 +705,8 @@ int main(int argc, char* argv[]) {
 
     //Declarations
     int s = 2; //Start vertex must be greater or equal to 1
-    int n = 4499; //Number of vertices
-    int num_edges = 4499; //Number of edges
+    int n = 2499; //Number of vertices
+    int num_edges = 3125; //Number of edges
 
     //Create edges
     std::vector< std::vector<int> > edges;
@@ -722,14 +726,14 @@ int main(int argc, char* argv[]) {
     std::vector<int> results = shortest_reach(n, edges, s);
 
     //Print results
-    float tot_num_ops_est = 3*n + 2*num_edges + 6.4*n*log(n)/log(2);
+    float tot_num_ops_est = 6*n + 3*num_edges + 6.4*n*log(n)/log(2);
     float complexity_ratio = tot_num_ops / tot_num_ops_est;
     int size_results = (int) results.size();
     for(int i = 0; i < size_results; ++i) {
         std::cout << results[i] << " ";
     }
     std::cout << std::endl;
-    std::cout << "number of operations estimated 3V + 2E + 6.4VlgV: " << tot_num_ops_est << std::endl;
+    std::cout << "number of operations estimated 6V + 3E + 6.4VlgV: " << tot_num_ops_est << std::endl;
     std::cout << "number of operations measured: " << tot_num_ops << std::endl;
     std::cout << "complexity ratio: " << complexity_ratio << std::endl;
     std::cout << "done" << std::endl;
