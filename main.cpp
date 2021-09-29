@@ -22,6 +22,7 @@ typedef struct FibHeapProperties {
     int num_nodes;
 } fib_props;
 
+
 typedef struct Node {
     Node* left;
     Node* right;
@@ -47,7 +48,7 @@ bool** bool2D(const int size) {
     bool** p = new bool*[size];
 
     for(int i = 0; i < size; ++i) {
-    	tot_num_ops++;
+        tot_num_ops++;
         p[i] = new bool[size];
     }
 
@@ -58,7 +59,7 @@ int** int2D(const int size) {
     int** p = new int*[size];
 
     for(int i = 0; i < size; ++i) {
-    	tot_num_ops++;
+        tot_num_ops++;
         p[i] = new int[size];
     }
 
