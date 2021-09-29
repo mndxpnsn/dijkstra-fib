@@ -14,6 +14,8 @@
 #include <vector>
 
 const int SETVAR = 314159;
+const int inf = 3e+8;
+int tot_num_ops = 0;
 
 typedef struct FibHeapProperties {
     bool deg_is_num_child;
@@ -84,7 +86,7 @@ void fib_heap_insert(FibHeap* H, node* x) {
     H->n = H->n + 1;
 }
 
-void print_root_circle(node* z) {
+void print_root_list(node* z) {
     node* xt = z;
     if(xt != NULL) {
         if(xt->right != z) {
@@ -132,13 +134,6 @@ void make_child_of(FibHeap* H, node* y, node* x) {
     x->degree = x->degree + 1;
 }
 
-void fib_heap_link(FibHeap* H, node* y, node* x) {
-
-    //Make y child of x
-    make_child_of(H, y, x);
-
-}
-
 void consolidate(FibHeap* H) {
 
     double golden = (1.0 + sqrt(5.0)) / 2.0;
@@ -147,11 +142,13 @@ void consolidate(FibHeap* H) {
 
     node** A = new node*[D + 2];
     for(int i = 0; i < D + 2; ++i) {
+        tot_num_ops++;
         A[i] = NULL;
     }
 
     node* x = H->min;
     if(x != NULL) {
+        //Root list has more than one node
         if(x->right != H->min) {
 
             //Ensure all root nodes have unique degrees
@@ -160,6 +157,7 @@ void consolidate(FibHeap* H) {
                 there_is_dup = false;
                 x = H->min;
                 while(x->right != H->min) {
+                    tot_num_ops++;
                     int d = x->degree;
                     if(A[d] != NULL && A[d] != x) {
                         there_is_dup = true;
@@ -196,6 +194,7 @@ void consolidate(FibHeap* H) {
                 }
 
                 if(x->right == H->min) {
+                    tot_num_ops++;
                     int d = x->degree;
                     if(A[d] != NULL && A[d] != x) {
                         there_is_dup = true;
@@ -231,6 +230,7 @@ void consolidate(FibHeap* H) {
                 }
             }
         }
+        //Root list has only one node
         else {
             int d = x->degree;
             A[d] = x;
@@ -240,6 +240,7 @@ void consolidate(FibHeap* H) {
     //Reconstruct root list
     H->min = NULL;
     for(int i = 0; i < D + 2; ++i) {
+        tot_num_ops++;
         if(A[i] != NULL) {
             if(H->min == NULL) {
                 A[i]->left = A[i];
@@ -261,7 +262,7 @@ void consolidate(FibHeap* H) {
     }
 }
 
-void print_child_circle(node* child) {
+void print_child_list(node* child) {
     node* xt = child;
     if(xt != NULL) {
         if(xt->right != child) {
@@ -291,7 +292,7 @@ void print_child_circle(node* child) {
     }
 }
 
-void print_circle(node* z) {
+void print_list(node* z) {
     node* xt = z;
     if(xt != NULL) {
         if(xt->right != z) {
@@ -299,7 +300,7 @@ void print_circle(node* z) {
                 std::cout << "xt->key: " << xt->key;
                 std::cout << ", xt->degree: " << xt->degree << std::endl;
                 if(xt->child != NULL) {
-                    print_child_circle(xt->child);
+                    print_child_list(xt->child);
                 }
                 xt = xt->right;
             }
@@ -308,7 +309,7 @@ void print_circle(node* z) {
                 std::cout << ", xt->degree: " << xt->degree << std::endl;
                 if(xt->child != NULL) {
                     if(xt->child != NULL) {
-                        print_child_circle(xt->child);
+                        print_child_list(xt->child);
                     }
                 }
             }
@@ -318,7 +319,7 @@ void print_circle(node* z) {
             std::cout << "xt->key: " << xt->key;
             std::cout << ", xt->degree: " << xt->degree << std::endl;
             if(xt->child != NULL) {
-                print_child_circle(xt->child);
+                print_child_list(xt->child);
             }
         }
     }
@@ -452,7 +453,6 @@ node* fib_heap_extract_min(FibHeap* H) {
     node* z = H->min;
 
     if(z != NULL) {
-
         //Add each child of z to root list
         node* y = z->child;
         if(y != NULL) {
@@ -476,7 +476,6 @@ node* fib_heap_extract_min(FibHeap* H) {
             H->min = NULL;
         }
         else {
-
             H->min = z->right;
             consolidate(H);
         }
@@ -560,24 +559,52 @@ void set_index_map(int size_graph, int* index_map, int s) {
 
     int index_track = 0;
     for(int i = s; i < size_graph; ++i) {
+        tot_num_ops++;
         index_map[i] = index_track;
         index_track++;
     }
     for(int i = 0; i < s; ++i) {
+        tot_num_ops++;
         index_map[i] = index_track;
         index_track++;
     }
 }
 
-void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat, int size_graph, std::vector< std::vector<int> >& edges) {
+void populate_adj_and_weight_mat(FibHeap* H,
+                                 int* index_map,
+                                 int** adj_mat,
+                                 int** weight_mat,
+                                 int size_graph,
+                                 std::vector< std::vector<int> >& edges,
+                                 node** v_ref) {
 
-    int** elem_is_set = int2D(size_graph);
 
+    for(int i = 0; i < size_graph; ++i) {
+        tot_num_ops++;
+        v_ref[i] = new node;
+        v_ref[i]->key = inf;
+        v_ref[i]->index = i;
+        if(i == 0) {
+            v_ref[i]->key = 0;
+        }
+        fib_heap_insert(H, v_ref[i]);
+    }
+
+    //Set weight and adjacency matrices and node references
     int num_edges = (int) edges.size();
+    int** elem_is_set = int2D(size_graph);
     for(int i = 0; i < num_edges; ++i) {
-        int start = index_map[edges[i][0] - 1];
-        int end = index_map[edges[i][1] - 1];
+        tot_num_ops++;
+        int start_index = edges[i][0] - 1;
+        int end_index = edges[i][1] - 1;
         int weight = edges[i][2];
+
+        int start = index_map[start_index];
+        int end = index_map[end_index];
+
+        v_ref[start]->adj_nodes.push_back(end);
+        v_ref[end]->adj_nodes.push_back(start);
+
         if(elem_is_set[start][end] != SETVAR) {
             weight_mat[start][end] = weight_mat[end][start] = weight;
             elem_is_set[start][end] = elem_is_set[end][start] = SETVAR;
@@ -620,6 +647,7 @@ void dijkstra(FibHeap* H, int** w, node** v_ref) {
 
         int num_adj_nodes = (int) u->adj_nodes.size();
         for(int i = 0; i < num_adj_nodes; ++i) {
+            tot_num_ops++;
             int index_ref = u->adj_nodes[i];
             node* v = v_ref[index_ref];
             relax(u, v, w, H);
@@ -641,33 +669,12 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     //Initialize heap
     int num_nodes = n;
     node** v_ref = new node*[num_nodes];
-    for(int i = 0; i < num_nodes; ++i) {
-        v_ref[i] = new node;
-        v_ref[i]->key = inf;
-        v_ref[i]->index = i;
-        if(i == 0) {
-            v_ref[i]->key = 0;
-        }
-        fib_heap_insert(&H, v_ref[i]);
-    }
-
-    //Add references to adjacent nodes
-    int num_edges = (int) edges.size();
-    for(int i = 0; i < num_edges; ++i) {
-        int start_index = edges[i][0] - 1;
-        int end_index = edges[i][1] - 1;
-
-        int start_index_reordered = index_map[start_index];
-        int end_index_reordered = index_map[end_index];
-        v_ref[start_index_reordered]->adj_nodes.push_back(end_index_reordered);
-        v_ref[end_index_reordered]->adj_nodes.push_back(start_index_reordered);
-    }
 
     //Initialize weight and adjacency matrices
     int** adj_mat = int2D(n);
     int** weight_mat = int2D(n);
 
-    populate_adj_and_weight_hr(index_map, adj_mat, weight_mat, n, edges);
+    populate_adj_and_weight_mat(&H, index_map, adj_mat, weight_mat, n, edges, v_ref);
 
     //Perform Dijkstra's algorithm
     dijkstra(&H, weight_mat, v_ref);
@@ -675,6 +682,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     //Reorder results
     std::vector<int> rs_S_reordered;
     for(int i = 0; i < n; ++i) {
+        tot_num_ops++;
         if(i != s) {
             int index = index_map[i];
             if(v_ref[index]->key == inf) {
@@ -693,8 +701,8 @@ int main(int argc, char* argv[]) {
 
     //Declarations
     int s = 2; //Start vertex must be greater or equal to 1
-    int n = 2499; //Number of vertices
-    int num_edges = 3125; //Number of edges
+    int n = 4499; //Number of vertices
+    int num_edges = 4499; //Number of edges
 
     //Create edges
     std::vector< std::vector<int> > edges;
@@ -714,11 +722,16 @@ int main(int argc, char* argv[]) {
     std::vector<int> results = shortest_reach(n, edges, s);
 
     //Print results
+    float tot_num_ops_est = 3*n + 2*num_edges + 6.4*n*log(n)/log(2);
+    float complexity_ratio = tot_num_ops / tot_num_ops_est;
     int size_results = (int) results.size();
     for(int i = 0; i < size_results; ++i) {
         std::cout << results[i] << " ";
     }
     std::cout << std::endl;
+    std::cout << "number of operations estimated 3V + 2E + 6.4VlgV: " << tot_num_ops_est << std::endl;
+    std::cout << "number of operations measured: " << tot_num_ops << std::endl;
+    std::cout << "complexity ratio: " << complexity_ratio << std::endl;
     std::cout << "done" << std::endl;
 
     return 0;
