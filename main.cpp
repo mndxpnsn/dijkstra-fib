@@ -68,6 +68,7 @@ int** int2D(const int size) {
 
 void free_bool2D(bool** p, int size) {
     for(int i = 0; i < size; ++i) {
+        tot_num_ops++;
         delete [] p[i];
     }
 
@@ -76,6 +77,7 @@ void free_bool2D(bool** p, int size) {
 
 void free_int2D(int** p, int size) {
     for(int i = 0; i < size; ++i) {
+        tot_num_ops++;
         delete [] p[i];
     }
 
@@ -84,6 +86,7 @@ void free_int2D(int** p, int size) {
 
 void free_node_ref(node** v_ref, int size) {
     for(int i = 0; i < size; ++i) {
+        tot_num_ops++;
         delete v_ref[i];
     }
 
@@ -760,14 +763,14 @@ int main(int argc, char* argv[]) {
     std::vector<int> results = shortest_reach(n, edges, s);
 
     //Print results
-    float tot_num_ops_est = 6*n + 3*num_edges + 6.4*n*log(n)/log(2);
+    float tot_num_ops_est = 10*n + 3*num_edges + 6.4*n*log(n)/log(2);
     float complexity_ratio = tot_num_ops / tot_num_ops_est;
     int size_results = (int) results.size();
     for(int i = 0; i < size_results; ++i) {
         std::cout << results[i] << " ";
     }
     std::cout << std::endl;
-    std::cout << "number of operations estimated 6V + 3E + 6.4VlgV: " << tot_num_ops_est << std::endl;
+    std::cout << "number of operations estimated 10V + 3E + 6.4VlgV: " << tot_num_ops_est << std::endl;
     std::cout << "number of operations measured: " << tot_num_ops << std::endl;
     std::cout << "complexity ratio: " << complexity_ratio << std::endl;
     std::cout << "done" << std::endl;
