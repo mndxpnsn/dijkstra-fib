@@ -66,6 +66,30 @@ int** int2D(const int size) {
     return p;
 }
 
+void free_bool2D(bool** p, int size) {
+    for(int i = 0; i < size; ++i) {
+        delete [] p[i];
+    }
+
+    delete [] p;
+}
+
+void free_int2D(int** p, int size) {
+    for(int i = 0; i < size; ++i) {
+        delete [] p[i];
+    }
+
+    delete [] p;
+}
+
+void free_node_ref(node** v_ref, int size) {
+    for(int i = 0; i < size; ++i) {
+        delete v_ref[i];
+    }
+
+    delete [] v_ref;
+}
+
 void fib_heap_insert(FibHeap* H, node* x) {
     x->degree = 0;
     x->p = NULL;
@@ -575,13 +599,13 @@ void set_index_map(int size_graph, int* index_map, int s) {
     }
 }
 
-void populate_adj_and_weight_mat(FibHeap* H,
-                                 int* index_map,
-                                 int** adj_mat,
-                                 int** weight_mat,
-                                 int size_graph,
-                                 std::vector< std::vector<int> >& edges,
-                                 node** v_ref) {
+void set_adj_and_weight_mat_and_ref(FibHeap* H,
+                                    int* index_map,
+                                    int** adj_mat,
+                                    int** weight_mat,
+                                    int size_graph,
+                                    std::vector< std::vector<int> >& edges,
+                                    node** v_ref) {
 
 
     for(int i = 0; i < size_graph; ++i) {
@@ -619,6 +643,9 @@ void populate_adj_and_weight_mat(FibHeap* H,
         }
         adj_mat[start][end] = adj_mat[end][start] = SETVAR;
     }
+
+    //Deallocate node flags
+    free_int2D(elem_is_set, size_graph);
 }
 
 bool check_fib_heap(FibHeap* H) {
@@ -679,7 +706,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     int** adj_mat = int2D(n);
     int** weight_mat = int2D(n);
 
-    populate_adj_and_weight_mat(&H, index_map, adj_mat, weight_mat, n, edges, v_ref);
+    set_adj_and_weight_mat_and_ref(&H, index_map, adj_mat, weight_mat, n, edges, v_ref);
 
     //Perform Dijkstra's algorithm
     dijkstra(&H, weight_mat, v_ref);
@@ -698,6 +725,12 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
             }
         }
     }
+
+    //Deallocate memory
+    free_int2D(adj_mat, n);
+    free_int2D(weight_mat, n);
+    free_node_ref(v_ref, n);
+    delete [] index_map;
 
     return rs_S_reordered;
 }
