@@ -122,18 +122,14 @@ void print_root_list(node* z) {
     node* xt = z;
     if(xt != NULL) {
         if(xt->right != z) {
-            while(xt->right != z) {
+            do {
                 std::cout << "xt->key: " << xt->key;
                 std::cout << ", xt->degree: " << xt->degree << std::endl;
                 xt = xt->right;
-            }
-            if(xt->right == z) {
-                std::cout << "xt->key: " << xt->key;
-                std::cout << ", xt->degree: " << xt->degree << std::endl;
-            }
+            } while(xt != z);
         }
         else {
-            std::cout << "X == X->RIGHT" << std::endl;
+            std::cout << "list has just one node" << std::endl;
             std::cout << "xt->key: " << xt->key;
             std::cout << ", xt->degree: " << xt->degree << std::endl;
         }
@@ -265,26 +261,17 @@ void print_child_list(node* child) {
     node* xt = child;
     if(xt != NULL) {
         if(xt->right != child) {
-            while(xt->right != child) {
+            do {
                 std::cout << "xt->child->key: " << xt->key;
                 std::cout << ", xt->child->degree: " << xt->degree << std::endl;
                 if(xt->child != NULL) {
                     std::cout << "xt->child->child->key: " << xt->child->key << std::endl;
                 }
                 xt = xt->right;
-            }
-            if(xt->right == child) {
-                std::cout << "xt->child->key: " << xt->key;
-                std::cout << ", xt->child->degree: " << xt->degree << std::endl;
-                if(xt->child != NULL) {
-                    if(xt->child != NULL) {
-                        std::cout << "xt->child->child->key: " << xt->child->key << std::endl;
-                    }
-                }
-            }
+            } while(xt != child);
         }
         else {
-            std::cout << "X->CHILD == X->CHILD->RIGHT" << std::endl;
+            std::cout << "child list has just one node" << std::endl;
             std::cout << "xt->child->key: " << xt->key;
             std::cout << ", xt->child->degree: " << xt->degree << std::endl;
         }
@@ -295,26 +282,17 @@ void print_list(node* z) {
     node* xt = z;
     if(xt != NULL) {
         if(xt->right != z) {
-            while(xt->right != z) {
+            do {
                 std::cout << "xt->key: " << xt->key;
                 std::cout << ", xt->degree: " << xt->degree << std::endl;
                 if(xt->child != NULL) {
                     print_child_list(xt->child);
                 }
                 xt = xt->right;
-            }
-            if(xt->right == z) {
-                std::cout << "xt->key: " << xt->key;
-                std::cout << ", xt->degree: " << xt->degree << std::endl;
-                if(xt->child != NULL) {
-                    if(xt->child != NULL) {
-                        print_child_list(xt->child);
-                    }
-                }
-            }
+            } while(xt != z);
         }
         else {
-            std::cout << "X == X->RIGHT" << std::endl;
+            std::cout << "list has just one node" << std::endl;
             std::cout << "xt->key: " << xt->key;
             std::cout << ", xt->degree: " << xt->degree << std::endl;
             if(xt->child != NULL) {
@@ -330,21 +308,14 @@ bool numbers_children_match(node* z, int& num_nodes) {
 
     node* xt = z->child;
     if(xt != NULL) {
-        while(xt->right != z->child) {
+        do {
             num_of_nodes++;
             if(xt->child != NULL) {
                 nums_match = numbers_children_match(xt, num_nodes);
                 if(!nums_match) { return false; }
             }
             xt = xt->right;
-        }
-        if(xt->right == z->child) {
-            num_of_nodes++;
-            if(xt->child != NULL) {
-                nums_match = numbers_children_match(xt, num_nodes);
-                if(!nums_match) { return false; }
-            }
-        }
+        } while(xt != z->child);
 
         num_nodes = num_nodes + num_of_nodes;
 
@@ -363,21 +334,14 @@ fib_props numbers_match(node* z) {
 
     node* xt = z;
     if(xt != NULL) {
-        while(xt->right != z) {
+        do {
             num_nodes++;
             nums_match = numbers_children_match(xt, num_nodes);
             fib_heap_props.deg_is_num_child = nums_match;
             fib_heap_props.num_nodes = num_nodes;
             if(!nums_match) { return fib_heap_props; }
             xt = xt->right;
-        }
-        if(xt->right == z) {
-            num_nodes++;
-            nums_match = numbers_children_match(xt, num_nodes);
-            fib_heap_props.deg_is_num_child = nums_match;
-            fib_heap_props.num_nodes = num_nodes;
-            if(!nums_match) { return fib_heap_props; }
-        }
+        } while(xt != z);
     }
 
     fib_heap_props.deg_is_num_child = nums_match;
@@ -391,7 +355,7 @@ bool is_fib_heap_children(node* z) {
 
     node* xt = z->child;
     if(xt != NULL) {
-        while(xt->right != z->child) {
+        do {
             if(xt->p->key > xt->key) {
                 return is_fibheap = false;
             }
@@ -400,16 +364,7 @@ bool is_fib_heap_children(node* z) {
                 if(!is_fibheap) { return false; }
             }
             xt = xt->right;
-        }
-        if(xt->right == z->child) {
-            if(xt->p->key > xt->key) {
-                return is_fibheap = false;
-            }
-            if(xt->child != NULL) {
-                is_fibheap = is_fib_heap_children(xt);
-                if(!is_fibheap) { return false; }
-            }
-        }
+        } while(xt != z->child);
     }
 
     return is_fibheap;
@@ -418,13 +373,10 @@ bool is_fib_heap_children(node* z) {
 void nullify_children_parent_node(node* z) {
     node* xt = z->child;
     if(xt != NULL) {
-        while(xt->right != z->child) {
+        do {
             xt->p = NULL;
             xt = xt->right;
-        }
-        if(xt->right == z->child) {
-            xt->p = NULL;
-        }
+        } while(xt != z->child);
     }
 }
 
@@ -433,15 +385,11 @@ bool is_fib_heap(node* z) {
 
     node* xt = z;
     if(xt != NULL) {
-        while(xt->right != z) {
+        do {
             is_fibheap = is_fib_heap_children(xt);
             if(!is_fibheap) { return false; }
             xt = xt->right;
-        }
-        if(xt->right == z) {
-            is_fibheap = is_fib_heap_children(xt);
-            if(!is_fibheap) { return false; }
-        }
+        } while(xt != z);
     }
 
     return is_fibheap;
