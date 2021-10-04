@@ -567,10 +567,9 @@ void set_adj_and_weight_mat_and_ref(FibHeap* H,
 }
 
 bool check_fib_heap(FibHeap* H) {
-    /*This is the general test for the fibonacci heap.
-      The function returns true if the heap satisfies
-      the fibonacci heap properties
-     */
+    //This is the general test for the fibonacci heap.
+    //The function returns true if the heap satisfies
+    //the fibonacci heap properties
 
     //Compute heap properties
     fib_props fh_props = numbers_match(H->min);
