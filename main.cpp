@@ -166,6 +166,41 @@ void make_child_of(FibHeap* H, node* y, node* x) {
     x->degree = x->degree + 1;
 }
 
+void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
+    int d = x->degree;
+    if(A[d] != NULL && A[d] != x) {
+        there_is_dup = true;
+        node* y = A[d];
+        if(y->key > x->key) {
+            //Make y child of x;
+             make_child_of(H, y, x);
+
+             A[d] = NULL;
+             A[d+1] = x;
+
+            if(y == H->min) {
+                H->min = x;
+            }
+        }
+        else {
+            //Make x child of y;
+            make_child_of(H, x, y);
+
+            A[d] = NULL;
+            A[d+1] = y;
+
+            if(x == H->min) {
+                H->min = y;
+            }
+
+            x = y;
+        }
+    }
+    else {
+        A[d] = x;
+    }
+}
+
 void consolidate(FibHeap* H) {
 
     double golden = (1.0 + sqrt(5.0)) / 2.0;
@@ -190,75 +225,13 @@ void consolidate(FibHeap* H) {
                 x = H->min;
                 while(x->right != H->min) {
                     tot_num_ops++;
-                    int d = x->degree;
-                    if(A[d] != NULL && A[d] != x) {
-                        there_is_dup = true;
-                        node* y = A[d];
-                        if(y->key > x->key) {
-                            //Make y child of x;
-                             make_child_of(H, y, x);
-
-                             A[d] = NULL;
-                             A[d+1] = x;
-
-                            if(y == H->min) {
-                                H->min = x;
-                            }
-                        }
-                        else {
-                            //Make x child of y;
-                            make_child_of(H, x, y);
-
-                            A[d] = NULL;
-                            A[d+1] = y;
-
-                            if(x == H->min) {
-                                H->min = y;
-                            }
-
-                            x = y;
-                        }
-                    }
-                    else {
-                        A[d] = x;
-                    }
+                    link_dup_deg(H, A, x, there_is_dup);
                     x = x->right;
                 }
 
                 if(x->right == H->min) {
                     tot_num_ops++;
-                    int d = x->degree;
-                    if(A[d] != NULL && A[d] != x) {
-                        there_is_dup = true;
-                        node* y = A[d];
-                        if(y->key > x->key) {
-                            //Make y child of x;
-                            make_child_of(H, y, x);
-
-                            A[d] = NULL;
-                            A[d+1] = x;
-
-                            if(y == H->min) {
-                                H->min = x;
-                            }
-                        }
-                        else {
-                            //Make x child of y;
-                            make_child_of(H, x, y);
-
-                            A[d] = NULL;
-                            A[d+1] = y;
-
-                            if(x == H->min) {
-                                H->min = y;
-                            }
-
-                            x = y;
-                        }
-                    }
-                    else {
-                        A[d] = x;
-                    }
+                    link_dup_deg(H, A, x, there_is_dup);
                 }
             }
         }
@@ -697,7 +670,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     const int inf = 3e+8;
 
     //Set index map
-    s = s - 1; //Substract 1 from start index
+    s = s - 1; //Subtract 1 from start index
     int* index_map = new int[n];
     set_index_map(n, index_map, s);
 
@@ -741,7 +714,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
 int main(int argc, char* argv[]) {
 
     //Declarations
-    int s = 2; //Start vertex must be greater or equal to 1
+    int s = 2; //Start vertex. The minimum vertex has index 1
     int n = 2499; //Number of vertices
     int num_edges = 3125; //Number of edges
 
