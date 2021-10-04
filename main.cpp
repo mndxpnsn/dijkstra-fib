@@ -217,22 +217,16 @@ void consolidate(FibHeap* H) {
     if(x != NULL) {
         //Root list has more than one node
         if(x->right != H->min) {
-
             //Ensure all root nodes have unique degrees
             bool there_is_dup = true;
             while(there_is_dup) {
                 there_is_dup = false;
                 x = H->min;
-                while(x->right != H->min) {
+                do {
                     tot_num_ops++;
                     link_dup_deg(H, A, x, there_is_dup);
                     x = x->right;
-                }
-
-                if(x->right == H->min) {
-                    tot_num_ops++;
-                    link_dup_deg(H, A, x, there_is_dup);
-                }
+                } while(x != H->min);
             }
         }
         //Root list has only one node
