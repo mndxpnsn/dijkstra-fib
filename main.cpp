@@ -22,7 +22,6 @@ typedef struct FibHeapProperties {
     int num_nodes;
 } fib_props;
 
-
 typedef struct Node {
     Node* left;
     Node* right;
@@ -169,10 +168,10 @@ void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
         node* y = A[d];
         if(y->key > x->key) {
             //Make y child of x;
-             make_child_of(H, y, x);
+            make_child_of(H, y, x);
 
-             A[d] = NULL;
-             A[d+1] = x;
+            A[d] = NULL;
+            A[d+1] = x;
 
             if(y == H->min) {
                 H->min = x;
