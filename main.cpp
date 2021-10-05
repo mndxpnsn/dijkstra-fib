@@ -156,6 +156,7 @@ void make_child_of(FibHeap* H, node* y, node* x) {
 
 void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
     int d = x->degree;
+    //There is a node with the same degree and node is not node x
     if(A[d] != NULL && A[d] != x) {
         there_is_dup = true;
         node* y = A[d];
@@ -184,6 +185,7 @@ void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
             x = y;
         }
     }
+    //There is no node with the same degree or node is node x
     else {
         A[d] = x;
     }
@@ -195,38 +197,31 @@ void consolidate(FibHeap* H) {
     double f = log(H->n) / log(golden);
     int D = floor(f + 0.01) + 1;
 
-    node** A = new node*[D + 2];
-    for(int i = 0; i < D + 2; ++i) {
+    //Allocate memory for root list construction
+    node** A = new node*[D + 1];
+    for(int i = 0; i < D + 1; ++i) {
         tot_num_ops++;
         A[i] = NULL;
     }
 
+    //Ensure all root nodes have unique degrees
     node* x = H->min;
     if(x != NULL) {
-        //Root list has more than one node
-        if(x->right != H->min) {
-            //Ensure all root nodes have unique degrees
-            bool there_is_dup = true;
-            while(there_is_dup) {
-                there_is_dup = false;
-                x = H->min;
-                do {
-                    tot_num_ops++;
-                    link_dup_deg(H, A, x, there_is_dup);
-                    x = x->right;
-                } while(x != H->min);
-            }
-        }
-        //Root list has only one node
-        else {
-            int d = x->degree;
-            A[d] = x;
+        bool there_is_dup = true;
+        while(there_is_dup) {
+            there_is_dup = false;
+            x = H->min;
+            do {
+                tot_num_ops++;
+                link_dup_deg(H, A, x, there_is_dup);
+                x = x->right;
+            } while(x != H->min);
         }
     }
 
     //Reconstruct root list
     H->min = NULL;
-    for(int i = 0; i < D + 2; ++i) {
+    for(int i = 0; i < D + 1; ++i) {
         tot_num_ops++;
         if(A[i] != NULL) {
             if(H->min == NULL) {
