@@ -175,9 +175,11 @@ void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
         node* y = A[d];
         //Link x and y
         if(y->key > x->key) {
+            //Make y child of x
             link(H, A, x, y, d);
         }
         else {
+            //Make x child of y
             link(H, A, y, x, d);
             x = y;
         }
