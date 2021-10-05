@@ -154,34 +154,31 @@ void make_child_of(FibHeap* H, node* y, node* x) {
     x->degree = x->degree + 1;
 }
 
+void link(FibHeap* H, node** A, node* x, node* y, int d) {
+
+    //Make y child of x;
+    make_child_of(H, y, x);
+
+    A[d] = NULL;
+    A[d+1] = x;
+
+    if(y == H->min) {
+        H->min = x;
+    }
+}
+
 void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
     int d = x->degree;
     //There is a node with the same degree and node is not node x
     if(A[d] != NULL && A[d] != x) {
         there_is_dup = true;
         node* y = A[d];
+        //Link x and y
         if(y->key > x->key) {
-            //Make y child of x;
-            make_child_of(H, y, x);
-
-            A[d] = NULL;
-            A[d+1] = x;
-
-            if(y == H->min) {
-                H->min = x;
-            }
+            link(H, A, x, y, d);
         }
         else {
-            //Make x child of y;
-            make_child_of(H, x, y);
-
-            A[d] = NULL;
-            A[d+1] = y;
-
-            if(x == H->min) {
-                H->min = y;
-            }
-
+            link(H, A, y, x, d);
             x = y;
         }
     }
@@ -193,6 +190,7 @@ void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
 
 void consolidate(FibHeap* H) {
 
+    //Compute upper bound root list
     double golden = (1.0 + sqrt(5.0)) / 2.0;
     double f = log(H->n) / log(golden);
     int D = floor(f + 0.01) + 1;
