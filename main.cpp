@@ -588,7 +588,6 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     node** v_ref = new node*[num_nodes];
     int** weight_mat = int2D(n);
 
-
     //Set weight matrix and heap references
     set_weight_mat_and_ref(&H, index_map, weight_mat, n, edges, v_ref);
 
