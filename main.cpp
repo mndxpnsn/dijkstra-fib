@@ -487,13 +487,12 @@ void set_index_map(int size_graph, int* index_map, int s) {
     }
 }
 
-void set_adj_and_weight_mat_and_ref(FibHeap* H,
-                                    int* index_map,
-                                    int** adj_mat,
-                                    int** weight_mat,
-                                    int size_graph,
-                                    std::vector< std::vector<int> >& edges,
-                                    node** v_ref) {
+void set_weight_mat_and_ref(FibHeap* H,
+                            int* index_map,
+                            int** weight_mat,
+                            int size_graph,
+                            std::vector< std::vector<int> >& edges,
+                            node** v_ref) {
 
 
     for(int i = 0; i < size_graph; ++i) {
@@ -529,7 +528,6 @@ void set_adj_and_weight_mat_and_ref(FibHeap* H,
         else if(elem_is_set[start][end] == SETVAR && weight_mat[start][end] >= weight) {
             weight_mat[start][end] = weight_mat[end][start] = weight;
         }
-        adj_mat[start][end] = adj_mat[end][start] = SETVAR;
     }
 
     //Deallocate node flags
@@ -585,15 +583,14 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     int* index_map = new int[n];
     set_index_map(n, index_map, s);
 
-    //Initialize heap
+    //Initialize weight matrix and node references
     int num_nodes = n;
     node** v_ref = new node*[num_nodes];
-
-    //Initialize weight and adjacency matrices
-    int** adj_mat = int2D(n);
     int** weight_mat = int2D(n);
 
-    set_adj_and_weight_mat_and_ref(&H, index_map, adj_mat, weight_mat, n, edges, v_ref);
+
+    //Set weight matrix and heap references
+    set_weight_mat_and_ref(&H, index_map, weight_mat, n, edges, v_ref);
 
     //Perform Dijkstra's algorithm
     dijkstra(&H, weight_mat, v_ref);
@@ -614,7 +611,6 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     }
 
     //Deallocate memory
-    free_int2D(adj_mat, n);
     free_int2D(weight_mat, n);
     free_node_ref(v_ref, n);
     delete [] index_map;
@@ -627,9 +623,10 @@ int main(int argc, char* argv[]) {
     //Declarations
     int s = 2; //Start vertex. The minimum vertex has index 1
     int n = 2499; //Number of vertices
-    int num_edges = 3125; //Number of edges
+    int num_edges = 31252; //Number of edges
 
     //Create edges
+    srand(time(NULL));
     std::vector< std::vector<int> > edges;
     for(int i = 0; i < num_edges; ++i) {
         int start_vert = rand() % n + 1;
@@ -649,11 +646,11 @@ int main(int argc, char* argv[]) {
     //Print results
     float tot_num_ops_est = 10*n + 3*num_edges + 6.4*n*log(n)/log(2);
     float complexity_ratio = tot_num_ops / tot_num_ops_est;
-    int size_results = (int) results.size();
-    for(int i = 0; i < size_results; ++i) {
-        std::cout << results[i] << " ";
-    }
-    std::cout << std::endl;
+//    int size_results = (int) results.size();
+//    for(int i = 0; i < size_results; ++i) {
+//        std::cout << results[i] << " ";
+//    }
+//    std::cout << std::endl;
     std::cout << "number of operations estimated 10V + 3E + 6.4VlgV: " << tot_num_ops_est << std::endl;
     std::cout << "number of operations measured: " << tot_num_ops << std::endl;
     std::cout << "complexity ratio: " << complexity_ratio << std::endl;
