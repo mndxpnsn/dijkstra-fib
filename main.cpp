@@ -120,18 +120,11 @@ void fib_heap_insert(FibHeap* H, node* x) {
 void print_root_list(node* z) {
     node* xt = z;
     if(xt != NULL) {
-        if(xt->right != z) {
-            do {
-                std::cout << "xt->key: " << xt->key;
-                std::cout << ", xt->degree: " << xt->degree << std::endl;
-                xt = xt->right;
-            } while(xt != z);
-        }
-        else {
-            std::cout << "list has just one node" << std::endl;
+        do {
             std::cout << "xt->key: " << xt->key;
             std::cout << ", xt->degree: " << xt->degree << std::endl;
-        }
+            xt = xt->right;
+        } while(xt != z);
     }
 }
 
@@ -259,45 +252,28 @@ void consolidate(FibHeap* H) {
 void print_child_list(node* child) {
     node* xt = child;
     if(xt != NULL) {
-        if(xt->right != child) {
-            do {
-                std::cout << "xt->child->key: " << xt->key;
-                std::cout << ", xt->child->degree: " << xt->degree << std::endl;
-                if(xt->child != NULL) {
-                    std::cout << "xt->child->child->key: " << xt->child->key << std::endl;
-                }
-                xt = xt->right;
-            } while(xt != child);
-        }
-        else {
-            std::cout << "child list has just one node" << std::endl;
+        do {
             std::cout << "xt->child->key: " << xt->key;
             std::cout << ", xt->child->degree: " << xt->degree << std::endl;
-        }
+            if(xt->child != NULL) {
+                std::cout << "xt->child->child->key: " << xt->child->key << std::endl;
+            }
+            xt = xt->right;
+        } while(xt != child);
     }
 }
 
 void print_list(node* z) {
     node* xt = z;
     if(xt != NULL) {
-        if(xt->right != z) {
-            do {
-                std::cout << "xt->key: " << xt->key;
-                std::cout << ", xt->degree: " << xt->degree << std::endl;
-                if(xt->child != NULL) {
-                    print_child_list(xt->child);
-                }
-                xt = xt->right;
-            } while(xt != z);
-        }
-        else {
-            std::cout << "list has just one node" << std::endl;
+        do {
             std::cout << "xt->key: " << xt->key;
             std::cout << ", xt->degree: " << xt->degree << std::endl;
             if(xt->child != NULL) {
                 print_child_list(xt->child);
             }
-        }
+            xt = xt->right;
+        } while(xt != z);
     }
 }
 
