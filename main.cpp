@@ -623,10 +623,9 @@ int main(int argc, char* argv[]) {
     //Declarations
     int s = 2; //Start vertex. The minimum vertex has index 1
     int n = 2499; //Number of vertices
-    int num_edges = 31252; //Number of edges
+    int num_edges = 3125; //Number of edges
 
     //Create edges
-    srand(time(NULL));
     std::vector< std::vector<int> > edges;
     for(int i = 0; i < num_edges; ++i) {
         int start_vert = rand() % n + 1;
@@ -644,14 +643,14 @@ int main(int argc, char* argv[]) {
     std::vector<int> results = shortest_reach(n, edges, s);
 
     //Print results
-    float tot_num_ops_est = 10*n + 3*num_edges + 6.4*n*log(n)/log(2);
+    float tot_num_ops_est = 8*n + 3*num_edges + 6.4*n*log(n)/log(2);
     float complexity_ratio = tot_num_ops / tot_num_ops_est;
-//    int size_results = (int) results.size();
-//    for(int i = 0; i < size_results; ++i) {
-//        std::cout << results[i] << " ";
-//    }
-//    std::cout << std::endl;
-    std::cout << "number of operations estimated 10V + 3E + 6.4VlgV: " << tot_num_ops_est << std::endl;
+    int size_results = (int) results.size();
+    for(int i = 0; i < size_results; ++i) {
+        std::cout << results[i] << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "number of operations estimated 8V + 3E + 6.4VlgV: " << tot_num_ops_est << std::endl;
     std::cout << "number of operations measured: " << tot_num_ops << std::endl;
     std::cout << "complexity ratio: " << complexity_ratio << std::endl;
     std::cout << "done" << std::endl;
