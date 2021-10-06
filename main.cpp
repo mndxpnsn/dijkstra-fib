@@ -154,7 +154,9 @@ void make_child_of(FibHeap* H, node* y, node* x) {
     x->degree = x->degree + 1;
 }
 
-void link(FibHeap* H, node** A, node* x, node* y, int d) {
+void link(FibHeap* H, node** A, node* x, node* y) {
+
+	int d = x->degree;
 
     //Make y child of x;
     make_child_of(H, y, x);
@@ -176,11 +178,11 @@ void link_dup_deg(FibHeap* H, node** A, node*& x, bool& there_is_dup) {
         //Link x and y
         if(y->key > x->key) {
             //Make y child of x
-            link(H, A, x, y, d);
+            link(H, A, x, y);
         }
         else {
             //Make x child of y
-            link(H, A, y, x, d);
+            link(H, A, y, x);
             x = y;
         }
     }
