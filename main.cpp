@@ -156,7 +156,7 @@ void make_child_of(FibHeap* H, node* y, node* x) {
 
 void link(FibHeap* H, node** A, node* x, node* y) {
 
-	int d = x->degree;
+    int d = x->degree;
 
     //Make y child of x;
     make_child_of(H, y, x);
