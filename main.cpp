@@ -503,7 +503,7 @@ void set_weight_mat_and_ref(int size_graph,
         fib_heap_insert(H, node_refs[i]);
     }
 
-    //Set weight and adjacency matrices and node references
+    //Set weight  matrix and adjacent nodes
     int num_edges = (int) edges.size();
     int** elem_is_set = int2D(size_graph);
     for(int i = 0; i < num_edges; ++i) {
