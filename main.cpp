@@ -519,7 +519,7 @@ void set_weight_mat_and_ref(int size_graph,
         node_refs[end]->adj_nodes.push_back(start);
 
         bool is_set = elem_is_set[start][end] == SETVAR;
-        int is_greater = weight_mat[start][end] >= weight;
+        bool is_greater = weight_mat[start][end] >= weight;
         if(!is_set) {
             weight_mat[start][end] = weight;
             weight_mat[end][start] = weight;
