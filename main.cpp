@@ -243,6 +243,9 @@ void consolidate(FibHeap* H) {
             }
         }
     }
+
+    //Free root list reference
+    delete [] A;
 }
 
 void print_child_list(node* child) {
