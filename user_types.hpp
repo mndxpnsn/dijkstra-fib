@@ -11,7 +11,6 @@
 #include <vector>
 
 const int inf = 3e+8;
-extern int tot_num_ops;
 
 typedef struct FibHeapProperties {
     bool deg_is_num_child;

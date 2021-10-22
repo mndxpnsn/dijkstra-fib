@@ -11,7 +11,6 @@ bool** bool2D(const int size) {
     bool** p = new bool*[size];
 
     for(int i = 0; i < size; ++i) {
-        tot_num_ops++;
         p[i] = new bool[size];
     }
 
@@ -22,7 +21,6 @@ int** int2D(const int size) {
     int** p = new int*[size];
 
     for(int i = 0; i < size; ++i) {
-        tot_num_ops++;
         p[i] = new int[size];
     }
 
@@ -31,7 +29,6 @@ int** int2D(const int size) {
 
 void free_bool2D(bool** p, int size) {
     for(int i = 0; i < size; ++i) {
-        tot_num_ops++;
         delete [] p[i];
     }
 
@@ -40,7 +37,6 @@ void free_bool2D(bool** p, int size) {
 
 void free_int2D(int** p, int size) {
     for(int i = 0; i < size; ++i) {
-        tot_num_ops++;
         delete [] p[i];
     }
 
@@ -49,7 +45,6 @@ void free_int2D(int** p, int size) {
 
 void free_node_ref(node** v_ref, int size) {
     for(int i = 0; i < size; ++i) {
-        tot_num_ops++;
         delete v_ref[i];
     }
 

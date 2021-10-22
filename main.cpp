@@ -8,6 +8,7 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <time.h>
 
 #include "fib_heap.hpp"
 #include "user_types.hpp"
@@ -37,16 +38,11 @@ int main(int argc, char* argv[]) {
     std::vector<int> results = shortest_reach(n, edges, s);
 
     //Print results
-    float tot_num_ops_est = 5*n + 4*num_edges + 6.4*n*log(n)/log(2);
-    float complexity_ratio = tot_num_ops / tot_num_ops_est;
     int size_results = (int) results.size();
     for(int i = 0; i < size_results; ++i) {
         std::cout << results[i] << " ";
     }
     std::cout << std::endl;
-    std::cout << "number of operations estimated 5V + 4E + 6.4VlgV: " << tot_num_ops_est << std::endl;
-    std::cout << "number of operations measured: " << tot_num_ops << std::endl;
-    std::cout << "complexity ratio: " << complexity_ratio << std::endl;
     std::cout << "done" << std::endl;
 
     return 0;
