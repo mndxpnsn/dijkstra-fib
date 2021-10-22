@@ -16,10 +16,6 @@
 #include "memory.hpp"
 #include "user_types.hpp"
 
-int tot_num_ops = 0;
-int tot_num_ops_cons = 0;
-int num_ops_unique_degree = 0;
-
 void fib_heap_insert(FibHeap* H, node* x) {
     x->degree = 0;
     x->p = NULL;
@@ -286,7 +282,6 @@ void set_weight_mat_and_ref(int size_graph,
 
     //Initialize and construct heap
     for(int i = 0; i < size_graph; ++i) {
-        tot_num_ops++;
         node_refs[i] = new node;
         node_refs[i]->key = inf;
         node_refs[i]->index = i;
@@ -299,7 +294,6 @@ void set_weight_mat_and_ref(int size_graph,
     //Set weight  matrix and adjacent nodes
     int num_edges = (int) edges.size();
     for(int i = 0; i < num_edges; ++i) {
-        tot_num_ops++;
         int start_index = edges[i][0] - 1;
         int end_index = edges[i][1] - 1;
         int weight = edges[i][2];
@@ -316,7 +310,6 @@ void set_weight_mat_and_ref(int size_graph,
 
     //Traverse edges again to pick minimum weights
     for(int i = 0; i < num_edges; ++i) {
-        tot_num_ops++;
         int start_index = edges[i][0] - 1;
         int end_index = edges[i][1] - 1;
         int weight = edges[i][2];
@@ -340,7 +333,6 @@ void dijkstra(FibHeap* H, int** w, node** node_refs) {
 
         int num_adj_nodes = (int) u->adj_nodes.size();
         for(int i = 0; i < num_adj_nodes; ++i) {
-            tot_num_ops++;
             int index_ref = u->adj_nodes[i];
             node* v = node_refs[index_ref];
             relax(u, v, w, H);
@@ -352,7 +344,6 @@ std::vector<int> reorder_results(FibHeap* H, int n, int s, node** node_refs) {
 
     std::vector<int> results;
     for(int i = 0; i < n; ++i) {
-        tot_num_ops++;
         if(i != s) {
             int index = map_index(n, i, s);
             if(node_refs[index]->key == inf) {
